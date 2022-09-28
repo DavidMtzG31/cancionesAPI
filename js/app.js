@@ -52,7 +52,7 @@ function procesaDatos(datos) {
 		const divFoto = document.createElement('DIV');
 		const p = document.createElement('P');
 		divFoto.innerHTML = `
-		<p> La canción se llama ${title}, interpretada por ${subtitle}, y puedes escuchar una preview <a href="${href}">aquí</a> </p>
+		<p> La canción se llama ${title}, interpretada por ${subtitle}, y puedes escuchar una preview <a href="${href}" target="_blank">aquí</a> </p>
 		`
 		divFoto.appendChild(p);
 		resultado.appendChild(divFoto);
