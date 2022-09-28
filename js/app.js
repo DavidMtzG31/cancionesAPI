@@ -5,6 +5,7 @@ const cancion = document.getElementById('cancion');
 formulario.addEventListener('submit', validaExtrae);
 
 function validaExtrae(e) {
+	limpiarHTML();
 	e.preventDefault();
 	if(cancion.value === '') {
 		alerta('Introduce un término para búsqueda');
@@ -15,38 +16,37 @@ function validaExtrae(e) {
 
 
 function consultarAPI(cancion) {
+	spinner();
 
-const url = `https://shazam.p.rapidapi.com/search?term=${cancion}&locale=en-US&offset=0&limit=5`;
+	const url = `https://shazam.p.rapidapi.com/search?term=${cancion}&locale=en-US&offset=0&limit=5`;
 
-const options = {
-	method: 'GET',
-	headers: {
-		'X-RapidAPI-Key': 'd49dd24016msh726f2c471aa02b9p10157fjsn7b6ac20e66f1',
-		'X-RapidAPI-Host': 'shazam.p.rapidapi.com'
+	const options = {
+		method: 'GET',
+		headers: {
+			'X-RapidAPI-Key': 'd49dd24016msh726f2c471aa02b9p10157fjsn7b6ac20e66f1',
+			'X-RapidAPI-Host': 'shazam.p.rapidapi.com'
+		}
+	};
+
+	fetch(url , options)
+		.then(response => response.json())
+		.then(response => procesaDatos(response))
+		.catch(err => console.error(err));
 	}
-};
-
-fetch(url , options)
-	.then(response => response.json())
-	.then(response => procesaDatos(response))
-	.catch(err => console.error(err));
-}
 
 
 function procesaDatos(datos) {
+	limpiarHTML();
 	if (JSON.stringify(datos)=='{}') {
 		alerta('No hay resultados');
 		return;
 	}
 	const objPrincipal = datos.tracks.hits;
-	console.log(objPrincipal);
 
 	objPrincipal.forEach(cancion => {
 		const { track } = cancion;
 		const { title, subtitle, coverarthq, share } = track;
 		const { href } = share;
-	
-		console.log(`Esta canción se llama ${title}, interpretada por ${subtitle} y puedes escuchar una preview en ${href}`);
 
 		const resultado = document.getElementById('resultado');
 		const divFoto = document.createElement('DIV');
@@ -60,6 +60,27 @@ function procesaDatos(datos) {
 	});
 }
 
+
+// Tareas ajenas
+
+function spinner() {
+	const resultado = document.querySelector('#resultado');
+
+	const div = document.createElement('DIV');
+	div.classList.add('spinner');
+	div.innerHTML = `
+  		<div class="double-bounce1"></div>
+  		<div class="double-bounce2"></div>
+	`;
+	resultado.appendChild(div)
+}
+
+function limpiarHTML() {
+    const resultado = document.querySelector('#resultado');
+
+    while( resultado.firstChild )
+    resultado.removeChild(resultado.firstChild);
+}
 
 function alerta(mensaje) {
 	Swal.fire({
